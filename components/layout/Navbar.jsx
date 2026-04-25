@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Menu, ShoppingBag, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MobileMenu from './MobileMenu';
+import CartBadge from './CartBadge';
 
 const NAV_LINKS = [
   { href: '/',         label: 'Home' },
@@ -66,10 +67,7 @@ export default function Navbar() {
               <Button variant="ghost" size="icon" aria-label="Cart">
                 <ShoppingBag className="h-5 w-5" />
               </Button>
-              {/* Cart badge — hooked to store later */}
-              <span className="absolute -top-0.5 -right-0.5 grid place-items-center w-4 h-4 text-[10px] font-semibold rounded-full bg-secondary text-secondary-foreground">
-                0
-              </span>
+              <CartBadge />
             </Link>
 
             <Link href="/account" className="hidden sm:inline-flex">

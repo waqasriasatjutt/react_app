@@ -6,23 +6,32 @@ import { formatPrice } from '@/lib/utils';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Products — Shop' };
 
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }) {
+  const category = searchParams?.category || null;
+
   let products = [];
   let error = null;
   try {
-    products = await fetchProducts({ limit: 48 });
+    products = await fetchProducts({ limit: 48, category });
   } catch (err) {
     error = err.message;
   }
 
   return (
     <section className="container mx-auto py-10 sm:py-14">
-      <header className="mb-8 sm:mb-10">
-        <p className="text-xs uppercase tracking-widest text-primary mb-2">Catalog</p>
-        <h1 className="text-3xl sm:text-4xl font-bold">All products</h1>
-        <p className="text-sm sm:text-base text-white/60 mt-2">
-          Live from our Odoo backend.
-        </p>
+      <header className="mb-8 sm:mb-10 flex items-end justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-primary mb-2">Catalog</p>
+          <h1 className="text-3xl sm:text-4xl font-bold">
+            {category ? `Products in "${category}"` : 'All products'}
+          </h1>
+          <p className="text-sm sm:text-base text-white/60 mt-2">
+            {error ? 'Catalog unavailable.' : `${products.length} item${products.length === 1 ? '' : 's'} live from our backend.`}
+          </p>
+        </div>
+        {category && (
+          <Link href="/products" className="text-sm text-primary hover:underline">Clear filter →</Link>
+        )}
       </header>
 
       {error && (
@@ -34,7 +43,12 @@ export default async function ProductsPage() {
 
       {!error && products.length === 0 && (
         <div className="card-surface p-10 text-center">
-          <p className="text-white/60">No products yet.</p>
+          <p className="text-white/60">No products yet{category ? ` in "${category}"` : ''}.</p>
+          {category && (
+            <div className="mt-4">
+              <Link href="/products" className="text-primary hover:underline text-sm">See all products</Link>
+            </div>
+          )}
         </div>
       )}
 
