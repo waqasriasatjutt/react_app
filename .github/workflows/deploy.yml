@@ -1,0 +1,35 @@
+name: Deploy to devcynx
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-eshop
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH to devcynx and redeploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.DEVCYNX_HOST }}
+          username: ${{ secrets.DEVCYNX_USER }}
+          password: ${{ secrets.DEVCYNX_PASSWORD }}
+          port:     22
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/wtsk/stacks/eshop
+            echo "[deploy] git pull"
+            git pull --ff-only origin main
+            echo "[deploy] docker compose build"
+            docker compose build --pull
+            echo "[deploy] docker compose up -d"
+            docker compose up -d --force-recreate --no-deps app
+            echo "[deploy] prune old images"
+            docker image prune -f
+            echo "[deploy] done"

@@ -1,0 +1,21 @@
+services:
+  app:
+    container_name: eshop
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_SITE_URL: https://eshop.way4tech.com
+      # Stripe / NextAuth secrets are loaded from .env.production on the host
+    env_file:
+      - .env.production
+    networks:
+      - proxynet
+    expose:
+      - "3000"   # NPM reaches us on the proxynet, no host port mapping
+
+networks:
+  proxynet:
+    external: true

@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0a0a;
+  --card: #111111;
+  --primary: #6c63ff;
+  --secondary: #ff6584;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: #f5f5f5;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar — keeps the dark theme consistent */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+/* Utility: card surface with smooth hover lift */
+@layer components {
+  .card-surface {
+    @apply bg-card border border-border rounded-xl
+           transition-all duration-300 ease-out
+           hover:border-primary/40 hover:-translate-y-0.5
+           hover:shadow-lg hover:shadow-primary/10;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground
+           hover:shadow-glow-primary hover:scale-[1.02]
+           active:scale-[0.98]
+           transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground
+           hover:shadow-glow-secondary hover:scale-[1.02]
+           active:scale-[0.98]
+           transition-all duration-200;
+  }
+
+  .navbar-glass {
+    @apply bg-black/80 backdrop-blur-md border-b border-border;
+  }
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
