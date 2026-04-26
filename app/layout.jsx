@@ -1,6 +1,8 @@
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,11 +24,14 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} dark`} suppressHydrationWarning>
-      <body className="min-h-screen bg-bg text-white antialiased">
-        <Navbar />
-        <main className="page-enter pt-16 sm:pt-20">
+      <body className="min-h-screen flex flex-col bg-bg text-white antialiased">
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
+        <main className="page-enter pt-16 sm:pt-20 flex-1">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );

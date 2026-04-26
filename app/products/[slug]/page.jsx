@@ -1,10 +1,11 @@
-import Link from 'next/link';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ChevronLeft, Truck, Shield, RotateCcw } from 'lucide-react';
+import { Truck, Shield, RotateCcw } from 'lucide-react';
 import { fetchProductBySlug } from '@/lib/odoo';
 import { formatPrice } from '@/lib/utils';
-import AddToCartButton from '@/components/products/AddToCartButton';
+import AddToCartWithQty from '@/components/products/AddToCartWithQty';
+import ProductGallery from '@/components/products/ProductGallery';
+import RelatedProducts from '@/components/products/RelatedProducts';
+import Breadcrumbs from '@/components/layout/Breadcrumbs';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,23 +36,18 @@ export default async function ProductDetail({ params }) {
   if (!product) notFound();
 
   return (
-    <section className="container mx-auto py-8 sm:py-12">
-      <Link href="/products" className="inline-flex items-center gap-1 text-sm text-white/60 hover:text-white mb-6">
-        <ChevronLeft className="h-4 w-4" />
-        Back to products
-      </Link>
+    <section className="container mx-auto py-6 sm:py-10">
+      <Breadcrumbs
+        items={[
+          { href: '/', label: 'Home' },
+          { href: '/products', label: 'Products' },
+          ...(product.category ? [{ href: `/products?category=${encodeURIComponent(product.category)}`, label: product.category }] : []),
+          { label: product.name },
+        ]}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
-        <div className="card-surface relative aspect-square overflow-hidden">
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            unoptimized
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-          />
-        </div>
+      <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
+        <ProductGallery images={product.gallery} alt={product.name} />
 
         <div className="flex flex-col">
           {product.category && (
@@ -64,10 +60,10 @@ export default async function ProductDetail({ params }) {
             <span className="text-xs text-white/50 mt-2 font-mono">SKU {product.sku}</span>
           )}
 
-          <div className="mt-4 flex items-baseline gap-3">
+          <div className="mt-4 flex items-baseline gap-3 flex-wrap">
             <span className="text-2xl sm:text-3xl font-semibold">{formatPrice(product.price)}</span>
             <span className={`text-xs font-medium ${product.inStock ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {product.inStock ? 'In stock' : 'Made to order'}
+              {product.inStock ? `In stock${product.qtyAvailable ? ` · ${product.qtyAvailable} available` : ''}` : 'Made to order'}
             </span>
           </div>
 
@@ -78,7 +74,7 @@ export default async function ProductDetail({ params }) {
           )}
 
           <div className="mt-6">
-            <AddToCartButton product={product} size="lg" fullWidth />
+            <AddToCartWithQty product={product} />
           </div>
 
           <ul className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
@@ -89,11 +85,18 @@ export default async function ProductDetail({ params }) {
               <RotateCcw className="h-4 w-4 text-primary" /> 30-day returns
             </li>
             <li className="card-surface p-3 flex items-center gap-2">
-              <Shield className="h-4 w-4 text-primary" /> Lifetime support
+              <Shield className="h-4 w-4 text-primary" /> Secure checkout
             </li>
           </ul>
+
+          <p className="mt-5 text-xs text-white/55">
+            Pay by <span className="text-white">card</span>, <span className="text-white">bank transfer</span>, or
+            {' '}<span className="text-white">cash on delivery</span>.
+          </p>
         </div>
       </div>
+
+      <RelatedProducts productId={product.id} categoryId={product.categoryId} />
     </section>
   );
 }
